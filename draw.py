@@ -3,7 +3,25 @@ from matrix import *
 from gmath import *
 
 def scanline_convert(polygons, i, screen, zbuffer ):
-    draw_line()
+    for k in range(len(polygons-2)):
+        ty = [polygons[k][1],polygons[k+1][1],polygons[k+2][1]]
+        tx = [polygons[k][0],polygons[k+1][0],polygons[k+2][0]]
+        yt = ty[ty.index(max(ty))]
+        yb = ty[ty.index(min(ty))]
+        ym = ty[]
+        xt = tx[tx.index(max(tx))]
+        xb = tx[tx.index(min(tx))]
+        xm = tx[]
+        d0 = (xt-xb)/abs(yt-yb)
+        d1 = ()/(yt-ym) if polygons[k][1] == yb else ()/()
+        for y in range(yb,yt):
+            if y >= ym:
+                for x in range(,d1):
+                    draw_line(,screen,zbuffer,)
+            else:
+                for x in range(,d0):
+                    draw_line(,screen,zbuffer,)
+
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
     add_point(polygons, x0, y0, z0)
