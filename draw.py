@@ -3,24 +3,27 @@ from matrix import *
 from gmath import *
 
 def scanline_convert(polygons, i, screen, zbuffer ):
-    for k in range(len(polygons-2)):
-        ty = [polygons[k][1],polygons[k+1][1],polygons[k+2][1]]
-        tx = [polygons[k][0],polygons[k+1][0],polygons[k+2][0]]
-        yt = ty[ty.index(max(ty))]
-        yb = ty[ty.index(min(ty))]
-        ym = ty[]
-        xt = tx[tx.index(max(tx))]
-        xb = tx[tx.index(min(tx))]
-        xm = tx[]
-        d0 = (xt-xb)/abs(yt-yb)
-        d1 = ()/(yt-ym) if polygons[k][1] == yb else ()/()
-        for y in range(yb,yt):
-            if y >= ym:
-                for x in range(,d1):
-                    draw_line(,screen,zbuffer,)
-            else:
-                for x in range(,d0):
-                    draw_line(,screen,zbuffer,)
+    ty = [polygons[i][1],polygons[i+1][1],polygons[i+2][1]]
+    tx = [polygons[i][0],polygons[i+1][0],polygons[i+2][0]]
+
+    yti = ty.index(max(ty))
+    ybi = ty.index(min(ty))
+    xti = tx.index(max(tx))
+    xbi = tx.index(min(tx))
+
+    yt, ym, yb = ty[yti], ty[], ty[ybi]
+    xt, xm, xb = tx[xti], tx[], tx[xbi]
+
+    d0 = (xt-xb)/abs(yt-yb)
+    d1 = (xt-xm)/(yt-ym) if ym == yb else (xm-xb)/(ym-yb)
+
+    for y in range(yb,yt):
+        if y >= ym:
+            for x in range(,d1):
+                draw_line(,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
+        else:
+            for x in range(,d0):
+                draw_line(,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
 
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
@@ -39,27 +42,7 @@ def draw_polygons( polygons, screen, zbuffer, color ):
         normal = calculate_normal(polygons, point)[:]
         #print normal
         if normal[2] > 0:
-            draw_line( int(polygons[point][0]),
-                       int(polygons[point][1]),
-                       polygons[point][2],
-                       int(polygons[point+1][0]),
-                       int(polygons[point+1][1]),
-                       polygons[point+1][2],
-                       screen, zbuffer, color)
-            draw_line( int(polygons[point+2][0]),
-                       int(polygons[point+2][1]),
-                       polygons[point+2][2],
-                       int(polygons[point+1][0]),
-                       int(polygons[point+1][1]),
-                       polygons[point+1][2],
-                       screen, zbuffer, color)
-            draw_line( int(polygons[point][0]),
-                       int(polygons[point][1]),
-                       polygons[point][2],
-                       int(polygons[point+2][0]),
-                       int(polygons[point+2][1]),
-                       polygons[point+2][2],
-                       screen, zbuffer, color)
+        	scanline_convert(polygons,point,screen,zbuffer)
         point+= 3
 
 
