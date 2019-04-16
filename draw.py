@@ -5,25 +5,24 @@ from gmath import *
 def scanline_convert(polygons, i, screen, zbuffer ):
     ty = [polygons[i][1],polygons[i+1][1],polygons[i+2][1]]
     tx = [polygons[i][0],polygons[i+1][0],polygons[i+2][0]]
+    tz = [polygons[i][2],polygons[i+1][2],polygons[i+2][2]]
 
-    yti = ty.index(max(ty))
-    ybi = ty.index(min(ty))
-    xti = tx.index(max(tx))
-    xbi = tx.index(min(tx))
+    ti = ty.index(max(ty))
+    bi = ty.index(min(ty))
+    mi = 0 if bi != 0 and ti != 0 else 1 if bi != 1 and ti != 1 else 2
 
-    yt, ym, yb = ty[yti], ty[], ty[ybi]
-    xt, xm, xb = tx[xti], tx[], tx[xbi]
+    yt, ym, yb = ty[ti], ty[mi], ty[bi]
+    xt, xm, xb = tx[ti], tx[mi], tx[bi]
+    zt, zm, zb = tz[ti], tz[mi], tz[bi]
 
     d0 = (xt-xb)/abs(yt-yb)
-    d1 = (xt-xm)/(yt-ym) if ym == yb else (xm-xb)/(ym-yb)
+    x0, x1 = xb, xb
 
-    for y in range(yb,yt):
-        if y >= ym:
-            for x in range(,d1):
-                draw_line(,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
-        else:
-            for x in range(,d0):
-                draw_line(,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
+    for y in range(yb,yt) if yb != ym else range(yt,yb,-1):
+        d1 = (xt-xm)/(yt-ym) if y >= ym else (xm-xb)/(ym-yb)
+        draw_line(x0,y,z,x1,y,z,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
+        x1 += d1
+        x0 += d0
 
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
@@ -170,12 +169,9 @@ def add_torus(polygons, cx, cy, cz, r0, r1, step ):
                         points[p2][1],
                         points[p2][2],
                         points[p1][0],
-                        points[p1][1],A = 2 * (y1 - y0)
-    B = -2 * (x1 - x0)
-    wide = False
-    tall = False
+                        points[p1][1],
                         points[p1][2] )
-A = 2 * (y1 - y0)
+    A = 2 * (y1 - y0)
     B = -2 * (x1 - x0)
     wide = False
     tall = False
