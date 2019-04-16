@@ -16,13 +16,18 @@ def scanline_convert(polygons, i, screen, zbuffer ):
     zt, zm, zb = tz[ti], tz[mi], tz[bi]
 
     d0 = (xt-xb)/abs(yt-yb)
+    dz0 = (zt-zb)/abs(yt-yb)
     x0, x1 = xb, xb
+    z0, z1 = zb, zb
 
-    for y in range(yb,yt) if yb != ym else range(yt,yb,-1):
+    for y in range(int(yb),int(yt)) if yb != ym else range(int(yt),int(yb),-1):
         d1 = (xt-xm)/(yt-ym) if y >= ym else (xm-xb)/(ym-yb)
-        draw_line(x0,y,z,x1,y,z,screen,zbuffer,[yt*xt,ym*xm,yb*xb])
+        dz1 = (zt-zm)/(yt-ym) if y >= ym else (zm-zb)/(ym-yb)
+        draw_line(int(x0),int(y),int(z0),int(x1),int(y),int(z1),screen,zbuffer,[yt*xt,ym*xm,yb*xb])
         x1 += d1
         x0 += d0
+        z0 += dz0
+        z1 += dz1
 
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
@@ -261,10 +266,13 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
     if x0 > x1:
         xt = x0
         yt = y0
+        zt = z0
         x0 = x1
         y0 = y1
+        z0 = z1
         x1 = xt
         y1 = yt
+        z1 = zt
 
     x = x0
     y = y0
@@ -308,8 +316,10 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
             loop_start = y1
             loop_end = y
 
+    z = z0
+    dz = (z1 - z0)/(loop_end-loop_start) if loop_end != loop_start else 0
     while ( loop_start < loop_end ):
-        plot( screen, zbuffer, color, x, y, 0 )
+        plot( screen, zbuffer, color, x, y, z )
         if ( (wide and ((A > 0 and d > 0) or (A < 0 and d < 0))) or
              (tall and ((A > 0 and d < 0) or (A < 0 and d > 0 )))):
 
@@ -320,5 +330,6 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
             x+= dx_east
             y+= dy_east
             d+= d_east
+        z += dz
         loop_start+= 1
-    plot( screen, zbuffer, color, x, y, 0 )
+    plot( screen, zbuffer, color, x, y, z1 )
